@@ -31,14 +31,18 @@ class Home extends Component {
 				title:"Belajar Node JS",
 				image:"/products/buku1.jpg"
 			},
+			{
+				title:"Belajar Node JS",
+				image:"/products/buku1.jpg"
+			},
 		];
 
 		return data.map((value) => {
 			return (
 				<Col md="3" xs="6">
 					<Link to="/barang">
-					<img className="img-fluid" src={value.image} />
-					<h3>{value.title}</h3>
+						<img className="img-fluid" src={value.image} />
+						<h3>{value.title}</h3>
 					</Link>
 				</Col>
 			)
