@@ -1,52 +1,46 @@
 import React, { Component } from 'react';
 import Header from '../layouts/header.jsx';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import {
 	Container,
 	Row,
-	Col
+	Col,
+	Progress
 } from 'reactstrap';
 import './home.css';
 
 class Home extends Component {
-	showData() {
-		const data = [
-			{
-				title:"Belajar Node JS",
-				image:"/products/buku1.jpg"
-			},
-			{
-				title:"Belajar Node JS",
-				image:"/products/buku1.jpg"
-			},
-			{
-				title:"Belajar Node PHP",
-				image:"/products/buku1.jpg"
-			},
-			{
-				title:"Belajar Node JS",
-				image:"/products/buku1.jpg"
-			},
-			{
-				title:"Belajar Node JS",
-				image:"/products/buku1.jpg"
-			},
-			{
-				title:"Belajar Node JS",
-				image:"/products/buku1.jpg"
-			},
-		];
+	constructor(props) {
+		super(props);
+		this.state = {
+			data: null
+		}
+	}
 
-		return data.map((value) => {
-			return (
-				<Col md="3" xs="6">
-					<Link to="/barang">
-						<img className="img-fluid" src={value.image} />
-						<h3>{value.title}</h3>
-					</Link>
-				</Col>
-			)
+	componentDidMount() {
+		axios.get('http://localhost:3210/product')
+		.then((res) => {
+			this.setState({
+				data:res.data
+			});
 		})
+	}
+
+	showData() {
+		const {data} = this.state;
+		if(data) {
+			return data.map((value) => {
+				return (
+					<Col key={value.id} md="3" xs="6">
+						<Link to="/barang">
+							<img className="img-fluid" src={value.image} />
+							<h3>{value.title}</h3>
+						</Link>
+					</Col>
+				)
+			})
+		}
 	}
 
 	render() {
