@@ -33,7 +33,7 @@ class Home extends Component {
 			return data.map((value) => {
 				return (
 					<Col key={value.id} md="3" xs="6">
-						<Link to="/barang">
+						<Link to={`/barang/${value.author}/${value.title}`}>
 							<img className="img-fluid" src={value.image} />
 							<h3>{value.title}</h3>
 						</Link>
