@@ -5,3 +5,21 @@ h2 {
 .bookImage {
 	text-align: right;
 }
+
+.qtyContainer {
+	margin-bottom: 20px;
+}
+
+.qtyContainer a {
+	border: 1px solid #fff;
+	background-color: #007bff;
+	color: #fff !important;
+	padding: 5px 10px;
+	cursor: pointer;
+}
+
+.qtyContainer input {
+	width: 50px;
+	text-align: center;
+}
+

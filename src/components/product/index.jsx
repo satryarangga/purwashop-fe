@@ -14,12 +14,37 @@ class Product extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			data: null
+			data: null,
+			qty: 1
 		}
 	}
 
-	handleAddCart(productId) {
-		alert(`Product ${productId} Added`);
+	handleAddCart(data) {
+		var param = {
+			customer_id: 1,
+			product_id: data._id,
+			price: data.price,
+			qty: this.state.qty,
+			subtotal: this.state.qty * data.price
+		}
+
+		axios.post(`http://localhost:3210/cart`, param)
+		.then( response => {
+			alert(`Product ${response.data.product_id} Added`);
+		});
+	}
+
+	handleChangeQty(type) {
+		let { qty } = this.state;
+		if(type == "plus") {
+			qty++;
+		} else {
+			qty--;
+		}
+
+		this.setState({
+			qty
+		})
 	}
 
 	componentDidMount() {
@@ -55,9 +80,14 @@ class Product extends Component {
 								<h2>{data.title}</h2>
 								<h3>Price: {angka(data.price).format(0,0)}</h3>
 								<h3>Stock: {data.stock}</h3>
+								<div className="qtyContainer">
+									<a onClick={this.handleChangeQty.bind(this, "minus")}>-</a>
+									<input type="number" value={this.state.qty} />
+									<a onClick={this.handleChangeQty.bind(this, "plus")}>+</a>
+								</div>
 								<Button 
 									color="primary"
-									onClick={this.handleAddCart.bind(this, data.id)}
+									onClick={this.handleAddCart.bind(this, data)}
 								>
 									Add to Cart
 								</Button>
