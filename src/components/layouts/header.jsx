@@ -45,6 +45,9 @@ class Header extends React.Component {
               <NavItem>
                 <NavLink>Halo {name}</NavLink>
               </NavItem>
+              <NavItem>
+                <NavLink href="/register/">Register</NavLink>
+              </NavItem>
             </Nav>
           </Collapse>
         </Navbar>
