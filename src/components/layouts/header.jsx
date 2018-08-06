@@ -20,16 +20,47 @@ class Header extends React.Component {
     this.toggle = this.toggle.bind(this);
     this.state = {
       isOpen: false,
+      auth: {}
     };
   }
+
+  componentDidMount() {
+    const auth = JSON.parse(localStorage.getItem('purwashop_auth'));
+
+    if(auth.name) {
+      this.setState({
+        auth
+      });
+    }
+  }
+
   toggle() {
     this.setState({
       isOpen: !this.state.isOpen
     });
   }
 
+  showAuth() {
+    const { auth } = this.state;
+    if(!auth) {
+      return (
+        <NavItem>
+          <NavLink href="/register/">Register</NavLink>
+        </NavItem>
+      )
+    } else {
+      return(
+        <NavItem>
+          <NavLink>Halo {auth.name}</NavLink>
+        </NavItem>
+      )
+    }
+  }
+
   render() {
     const { name } = this.props;
+    const { auth } = this.state;
+
     return (
       <div>
         <Navbar color="light" light expand="md">
@@ -42,12 +73,9 @@ class Header extends React.Component {
               <NavItem>
                 <NavLink href="/components/">Cart</NavLink>
               </NavItem>
-              <NavItem>
-                <NavLink>Halo {name}</NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink href="/register/">Register</NavLink>
-              </NavItem>
+              {
+                this.showAuth()
+              }
             </Nav>
           </Collapse>
         </Navbar>
