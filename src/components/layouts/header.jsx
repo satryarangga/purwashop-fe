@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import {
   Collapse,
   Navbar,
@@ -20,14 +20,14 @@ class Header extends React.Component {
     this.toggle = this.toggle.bind(this);
     this.state = {
       isOpen: false,
-      auth: {}
+      auth: false
     };
   }
 
   componentDidMount() {
     const auth = JSON.parse(localStorage.getItem('purwashop_auth'));
 
-    if(auth.name) {
+    if(auth && auth.name) {
       this.setState({
         auth
       });
@@ -40,6 +40,11 @@ class Header extends React.Component {
     });
   }
 
+  handleLogout() {
+    localStorage.removeItem("purwashop_auth");
+    window.location.reload();
+  }
+
   showAuth() {
     const { auth } = this.state;
     if(!auth) {
@@ -50,16 +55,21 @@ class Header extends React.Component {
       )
     } else {
       return(
-        <NavItem>
-          <NavLink>Halo {auth.name}</NavLink>
-        </NavItem>
+        <UncontrolledDropdown>
+          <DropdownToggle>Halo {auth.name}</DropdownToggle>
+          <DropdownMenu right>
+            <DropdownItem>
+              <a style={{cursor:"pointer"}} onClick={this.handleLogout.bind(this)}>Logout</a>
+            </DropdownItem>
+          </DropdownMenu>
+        </UncontrolledDropdown>
       )
     }
   }
 
   render() {
     const { name } = this.props;
-    const { auth } = this.state;
+    const { auth, redirect } = this.state;
 
     return (
       <div>
@@ -71,7 +81,7 @@ class Header extends React.Component {
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto" navbar>
               <NavItem>
-                <NavLink href="/components/">Cart</NavLink>
+                <NavLink href="/cart/">Cart</NavLink>
               </NavItem>
               {
                 this.showAuth()

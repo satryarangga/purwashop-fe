@@ -15,23 +15,30 @@ class Product extends Component {
 		super(props);
 		this.state = {
 			data: null,
-			qty: 1
+			qty: 1,
+			auth: false
 		}
 	}
 
 	handleAddCart(data) {
-		var param = {
-			customer_id: 1,
-			product_id: data._id,
-			price: data.price,
-			qty: this.state.qty,
-			subtotal: this.state.qty * data.price
-		}
+		const { auth } = this.state;
 
-		axios.post(`http://localhost:3210/cart`, param)
-		.then( response => {
-			alert(`Product ${response.data.product_id} Added`);
-		});
+		if(auth) {
+			var param = {
+				customer_id: auth._id,
+				product_id: data._id,
+				price: data.price,
+				qty: this.state.qty,
+				subtotal: this.state.qty * data.price
+			}
+			axios.post(`http://localhost:3210/cart`, param)
+			.then( response => {
+				alert(`Product ${response.data.product_id} Added`);
+			});
+		} else {
+			alert('Please login');
+			window.location.href = "/register";
+		}
 	}
 
 	handleChangeQty(type) {
@@ -49,6 +56,13 @@ class Product extends Component {
 
 	componentDidMount() {
 		const { match } = this.props;
+
+		const auth = JSON.parse(localStorage.getItem('purwashop_auth'));
+		if(auth && auth.name) {
+			this.setState({
+				auth
+			})
+		}
 
 		axios.get(`http://localhost:3210/product/${encodeURIComponent(match.params.author)}/${encodeURIComponent(match.params.title)}`)
 		.then((res) => {

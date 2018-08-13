@@ -15,6 +15,8 @@ class register extends Component{
             addressRegister:'',
             confRegister:'',
             phoneRegister:'',
+            emailLogin:'',
+            passwordLogin:'',
             redirect: false
         }
         this._handleUserInput = this._handleUserInput.bind();
@@ -27,7 +29,29 @@ class register extends Component{
         })
     }
 
-    _handleSubmit = (event)=>{
+    _handleSubmitLogin = (event) => {
+        const { emailLogin, passwordLogin } = this.state;
+
+        var param = {
+            email:emailLogin,
+            password:passwordLogin
+        }
+
+        axios.post('http://localhost:3210/customer/login', param)
+            .then(result => {
+                alert('Sukses to login');
+                localStorage.setItem('purwashop_auth', JSON.stringify(result.data));
+                this.setState({
+                    redirect: true
+                });
+            })
+            .catch(error => {
+                alert(error.response.data.message);
+            })
+        event.preventDefault();
+    }
+
+    _handleSubmitRegister = (event)=>{
         event.preventDefault();
         const { 
             emailRegister,
@@ -76,20 +100,22 @@ class register extends Component{
                     <Row>
                         <Col md="5">
                             <h1>Sign In</h1>
-                            <FormGroup>
-                                <Label for="exampleEmail">Email</Label>
-                                <Input type="email" name="email" placeholder="Email" required />
-                            </FormGroup>
-                            <FormGroup>
-                                <Label for="exampleEmail">Password</Label>
-                                <Input type="email" name="email" placeholder="Password" />
-                            </FormGroup>
-                            <Button color="primary">Sign In</Button>
+                            <Form onSubmit={this._handleSubmitLogin.bind(this)}>
+                                <FormGroup>
+                                    <Label for="exampleEmail">Email</Label>
+                                    <Input value={this.state.emailLogin} onChange={this._handleUserInput} type="email" name="emailLogin" placeholder="Email" required />
+                                </FormGroup>
+                                <FormGroup>
+                                    <Label for="exampleEmail">Password</Label>
+                                    <Input value={this.state.passwordLogin} onChange={this._handleUserInput} type="password" name="passwordLogin" placeholder="Password" />
+                                </FormGroup>
+                                <Button type="submit" color="primary">Sign In</Button>
+                            </Form>
                         </Col>
 
                         <Col md={{size:5,offset:2}}>
                             <h1>Register</h1>
-                            <Form onSubmit={this._handleSubmit.bind(this)}>
+                            <Form onSubmit={this._handleSubmitRegister.bind(this)}>
                                 <FormGroup>
                                     <Label for="exampleEmail">Name</Label>
                                     <Input type="text" name="nameRegister" onChange={this._handleUserInput} placeholder="Fullname" />
@@ -114,7 +140,7 @@ class register extends Component{
                                     <Label for="exampleEmail">Password Confirmation</Label>
                                     <Input type="password" name="confRegister"  onChange={this._handleUserInput} placeholder="Password Confirmation" />
                                 </FormGroup>
-                                <Button onClick={this._handleSubmit.bind()} type="submit" color="success">Register</Button>
+                                <Button onClick={this._handleSubmitRegister.bind()} type="submit" color="success">Register</Button>
                             </Form>
                         </Col>
                     </Row>
