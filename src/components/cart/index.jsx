@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Table, Button } from 'reactstrap';
+import { Link } from 'react-router-dom';
 import Header from '../layouts/header.jsx';
 import './cart.css';
 import axios from 'axios';
@@ -28,17 +29,25 @@ class ShoppingCart extends Component {
 	}
 
 	componentDidMount() {
+		this.getData(result => {
+			this.setState({data:result.data});
+		})
+	}
+
+	getData(callback) {
 		const customer = JSON.parse(localStorage.getItem('purwashop_auth'));
 		axios.get(`http://localhost:3210/cart/${customer._id}`)
-			.then( result => {
-				this.setState({
-					data:result.data
-				})
-			})
+		.then(callback);
 	}
 
 	handleDeleteCart(cart) {
-		alert(`${cart.productName} is deleted`);
+		axios.delete(`http://localhost:3210/cart/${cart.id}`)
+			.then(result => {
+				alert("Sukes delete");
+				this.getData(result => {
+					this.setState({data:result.data});
+				})
+			})
 	}
 
 	showCarts() {
@@ -76,6 +85,11 @@ class ShoppingCart extends Component {
 						{ this.showCarts() }
 					</tbody>
 				</Table>
+				<Link to='/checkout'>
+					<Button style={{float:"right",marginRight:"20px"}} color="success">
+						Lanjut Checkout
+					</Button>
+				</Link>
 			</div>
 		)
 	}

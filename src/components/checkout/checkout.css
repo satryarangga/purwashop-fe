@@ -1,0 +1,11 @@
+.checkoutContainer {
+	margin-top: 50px;
+}
+
+.payment-method-container {
+	border: 1px solid #000;
+}
+
+.payment-description {
+	margin-left: 10px;
+}

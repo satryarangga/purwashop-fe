@@ -4,6 +4,7 @@ import Home from './components/home';
 import Product from './components/product';
 import Register from './components/register';
 import Cart from './components/cart';
+import Checkout from './components/checkout';
 
 const Routes = () => {
   return (
@@ -12,7 +13,8 @@ const Routes = () => {
         <Route exact path="/barang/:author/:title" component={Product} />
         <Route exact path="/register" component={Register} />
         <Route exact path="/cart" component={Cart} />
-        <Route exact path="/" component={Home} />
+        <Route exact path="/checkout" component={Checkout} />
+        <Route path="/" component={Home} />
       </Switch>
     </BrowserRouter>
   );
