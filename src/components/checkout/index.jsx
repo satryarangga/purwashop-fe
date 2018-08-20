@@ -16,28 +16,6 @@ import axios from 'axios';
 import numeral from 'numeral';
 import './checkout.css';
 
-const PaymentMethod = [
-	{
-		id:1,
-		name:"Transfer Bank BCA",
-		desc:"Nomor rekening: 123456 atas nama Satrya Rangga",
-		logo:"https://4.bp.blogspot.com/-9x08MAEGeiI/W3Qw6F4gJPI/AAAAAAAAAss/-x904FuvOOwcHFMWg8ZDyh378Y1ruBLJACLcBGAs/s1600/bca.png"
-	},
-	{
-		id:2,
-		name:"Transfer Bank Mandiri",
-		desc:"Nomor rekening: 7890123 atas nama Satrya Rangga",
-		logo:"https://1.bp.blogspot.com/-OvitDBZg9hc/W3Qw6ODwVxI/AAAAAAAAAsw/phSG-YgjlLsCY8hR5MxCjsxhg0K6WosHQCLcBGAs/s1600/mandiri.png"
-	},
-	{
-		id:3,
-		name:"Transfer Bank BRI",
-		desc:"Nomor rekening: 12121212 atas nama Satrya Rangga",
-		logo:"https://1.bp.blogspot.com/-zN0USo7vZJA/W3Qw6IUnFgI/AAAAAAAAAso/ojxR3_djhwEdi5YWMwlFnepf8TJ8QdNpwCLcBGAs/s1600/bri.png"
-	}
-
-]
-
 class Checkout extends Component {
 	constructor(props) {
 		super(props);
@@ -45,10 +23,20 @@ class Checkout extends Component {
 			selectedPaymentDescription:"",
 			unauthorized: false,
 			customer: {},
-			cart:[]
+			cart:[],
+			paymentMethod: []
 		}
 
 		this.handleChangeInput = this.handleChangeInput.bind(this);
+	}
+
+	getPaymentMethod() {
+		axios.get('http://localhost:3210/payment')
+		.then(result => {
+			this.setState({
+				paymentMethod:result.data
+			})
+		})
 	}
 
 	getDataCart(callback) {
@@ -58,6 +46,7 @@ class Checkout extends Component {
 	}
 
 	componentDidMount() {
+		this.getPaymentMethod();
 		const customer = localStorage.getItem("purwashop_auth");
 		if(!customer) {
 			this.setState({unauthorized:true});
@@ -73,7 +62,8 @@ class Checkout extends Component {
 	}
 
 	showPaymentMethod() {
-		return PaymentMethod.map(value => {
+		const { paymentMethod } = this.state;
+		return paymentMethod.map(value => {
 			return (
 				<Col md="4">
 					<a onClick={this.handleChoosePayment.bind(this, value)}><img className="img-fluid" src={value.logo} /></a>
