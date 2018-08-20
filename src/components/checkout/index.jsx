@@ -38,6 +38,15 @@ class Checkout extends Component {
 			})
 		})
 	}
+	getCustomer(){
+		const customer = JSON.parse(localStorage.getItem('purwashop_auth'));
+		axios.get(`http://localhost:3210/customer/${customer._id}`)
+		.then(result => {
+			this.setState({
+				customer:result.data
+			})
+		})
+	}
 
 	getDataCart(callback) {
 		const customer = JSON.parse(localStorage.getItem('purwashop_auth'));
@@ -47,18 +56,18 @@ class Checkout extends Component {
 
 	componentDidMount() {
 		this.getPaymentMethod();
-		const customer = localStorage.getItem("purwashop_auth");
-		if(!customer) {
-			this.setState({unauthorized:true});
-		}
+		this.getCustomer();
+		// if(!customer) {
+		// 	this.setState({unauthorized:true});
+		// }
 
 		this.getDataCart(result => {
 			this.setState({cart:result.data});
 		})
 
-		this.setState({
-			customer: JSON.parse(customer)
-		})
+		// this.setState({
+		// 	customer: JSON.parse(customer)
+		// })
 	}
 
 	showPaymentMethod() {
@@ -85,6 +94,24 @@ class Checkout extends Component {
 		this.setState({
 			customer
 		})
+	}
+	updateCustomer(event){
+		event.preventDefault();
+		var param = {
+            name: this.state.customer.name,
+            email: this.state.customer.email,
+            address: this.state.customer.address,
+            phone: this.state.customer.phone
+        }
+		const customer = JSON.parse(localStorage.getItem('purwashop_auth'));
+		axios.put(`http://localhost:3210/customer/update/${customer._id}`, param)
+		.then(result => {
+			this.setState({
+				customer:result.data
+			})
+			alert("sukses ganti data")
+		})
+
 	}
 
 	showCarts() {
@@ -122,7 +149,7 @@ class Checkout extends Component {
 					<Row>
 						<Col md="8">
 							<h3>Data Customer</h3>
-							<Form style={{marginBottom:"30px"}}>
+							<Form style={{marginBottom:"30px"}} onSubmit={this.updateCustomer.bind(this)}>
 								<Row>
 									<Col md="6">
 										<FormGroup>
@@ -171,7 +198,7 @@ class Checkout extends Component {
 										</FormGroup>
 									</Col>
 								</Row>
-								<Button type="submit" color="success">Ganti Data Customer</Button>
+								<Button type="submit" color="success" >Ganti Data Customer</Button>
 							</Form>
 							<h3>Metode Pembayaran</h3>
 							<div className="payment-method-container">
