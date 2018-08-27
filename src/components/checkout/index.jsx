@@ -20,11 +20,13 @@ class Checkout extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			selectedPaymentDescription:"",
+			selectedPayment:null,
+			selectedPaymentId:null,
 			unauthorized: false,
 			customer: {},
 			cart:[],
-			paymentMethod: []
+			paymentMethod: [],
+			cartTotal:0
 		}
 
 		this.handleChangeInput = this.handleChangeInput.bind(this);
@@ -40,29 +42,44 @@ class Checkout extends Component {
 	}
 	getCustomer(){
 		const customer = JSON.parse(localStorage.getItem('purwashop_auth'));
-		axios.get(`http://localhost:3210/customer/${customer._id}`)
-		.then(result => {
-			this.setState({
-				customer:result.data
+		if(!customer) {
+			this.setState({unauthorized:true});
+		} else {
+			axios.get(`http://localhost:3210/customer/${customer._id}`)
+			.then(result => {
+				this.setState({
+					customer:result.data
+				})
 			})
-		})
+		}
 	}
 
 	getDataCart(callback) {
 		const customer = JSON.parse(localStorage.getItem('purwashop_auth'));
-		axios.get(`http://localhost:3210/cart/${customer._id}`)
-		.then(callback);
+		if(!customer) {
+			this.setState({unauthorized:true});
+		} else {
+			axios.get(`http://localhost:3210/cart/${customer._id}`)
+			.then(callback);
+		}
 	}
 
 	componentDidMount() {
+		let { cartTotal } = this.state;
+		const customer = JSON.parse(localStorage.getItem('purwashop_auth'));
+		if(!customer) {
+			this.setState({unauthorized:true});
+		}
 		this.getPaymentMethod();
 		this.getCustomer();
-		// if(!customer) {
-		// 	this.setState({unauthorized:true});
-		// }
 
 		this.getDataCart(result => {
 			this.setState({cart:result.data});
+			result.data.map((value, key) => {
+				cartTotal += value.subtotal;
+			})
+
+			this.setState({cartTotal});
 		})
 
 		// this.setState({
@@ -71,11 +88,22 @@ class Checkout extends Component {
 	}
 
 	showPaymentMethod() {
-		const { paymentMethod } = this.state;
+		let { paymentMethod, selectedPaymentId } = this.state;
 		return paymentMethod.map(value => {
+			const color = (selectedPaymentId === value._id) ? "#8e8e8e" : "#fff";
+
 			return (
 				<Col md="4">
-					<a onClick={this.handleChoosePayment.bind(this, value)}><img className="img-fluid" src={value.logo} /></a>
+					<a 
+						onClick={this.handleChoosePayment.bind(this, value)}
+						style={{cursor:"pointer"}}
+					>
+						<img 
+							className="img-fluid" 
+							src={value.logo}
+							style={{backgroundColor: color}}
+						/>
+					</a>
 				</Col>
 			)
 		})
@@ -83,7 +111,8 @@ class Checkout extends Component {
 
 	handleChoosePayment(value) {
 		this.setState({
-			selectedPaymentDescription:`${value.name} : ${value.desc}`
+			selectedPayment:`${value.name} : ${value.desc}`,
+			selectedPaymentId:value._id
 		})
 	}
 
@@ -95,6 +124,25 @@ class Checkout extends Component {
 			customer
 		})
 	}
+
+	handleSubmitOrder() {
+		const { selectedPaymentId, customer } = this.state;
+
+		if(!selectedPaymentId) {
+			alert("Silahkan pilih metode pembayaran");
+		} else {
+			const param = {
+				customer_id: customer._id,
+				payment_method_id: selectedPaymentId
+			}
+
+			axios.post('http://localhost:3210/payment/finish', param)
+				.then((result) => {
+					alert("Sukses");
+				})
+		}
+	}
+
 	updateCustomer(event){
 		event.preventDefault();
 		var param = {
@@ -115,7 +163,7 @@ class Checkout extends Component {
 	}
 
 	showCarts() {
-		const { cart } = this.state;
+		let { cart } = this.state;
 		if(cart) {
 			return cart.map(value => {
 				return (
@@ -137,7 +185,7 @@ class Checkout extends Component {
 	}
 
 	render() {
-		const { unauthorized, customer } = this.state;
+		const { unauthorized, customer, cartTotal } = this.state;
 
 		if(unauthorized) {
 			return <Redirect to="register" />
@@ -206,7 +254,7 @@ class Checkout extends Component {
 									{ this.showPaymentMethod() }
 								</Row>
 								<p className="payment-description">
-									{this.state.selectedPaymentDescription}
+									{this.state.selectedPayment}
 								</p>
 							</div>
 						</Col>
@@ -216,10 +264,10 @@ class Checkout extends Component {
 								<ListGroup>
 									{ this.showCarts() }
 									<ListGroupItem>
-										<h2 style={{fontSize:"24px",fontWeight:"600", textAlign:"center"}}>Total: Rp.1,200,000</h2>
+										<h2 style={{fontSize:"24px",fontWeight:"600", textAlign:"center"}}>Total: {numeral(cartTotal).format('0,0')} </h2>
 									</ListGroupItem>
 									<ListGroupItem style={{textAlign:"center"}}>
-										<Button color="primary" size="lg">Submit Order</Button>
+										<Button onClick={this.handleSubmitOrder.bind(this)} color="primary" size="lg">Submit Order</Button>
 									</ListGroupItem>
 								</ListGroup>
 							</div>
