@@ -81,10 +81,6 @@ class Checkout extends Component {
 
 			this.setState({cartTotal});
 		})
-
-		// this.setState({
-		// 	customer: JSON.parse(customer)
-		// })
 	}
 
 	showPaymentMethod() {
@@ -138,7 +134,7 @@ class Checkout extends Component {
 
 			axios.post('http://localhost:3210/payment/finish', param)
 				.then((result) => {
-					alert("Sukses");
+					window.location.href = "/history";
 				})
 		}
 	}

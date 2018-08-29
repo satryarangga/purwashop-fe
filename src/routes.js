@@ -5,6 +5,7 @@ import Product from './components/product';
 import Register from './components/register';
 import Cart from './components/cart';
 import Checkout from './components/checkout';
+import History from './components/history';
 
 const Routes = () => {
   return (
@@ -14,6 +15,7 @@ const Routes = () => {
         <Route exact path="/register" component={Register} />
         <Route exact path="/cart" component={Cart} />
         <Route exact path="/checkout" component={Checkout} />
+        <Route exact path="/history" component={History} />
         <Route path="/" component={Home} />
       </Switch>
     </BrowserRouter>
